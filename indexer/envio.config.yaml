@@ -1,0 +1,43 @@
+name: hypnos-indexer
+description: Envio indexer for Hypnos cognitive execution layer
+version: 1.0.0
+
+network:
+  name: sepolia
+  chainId: 11155111
+  rpcUrl: ${SEPOLIA_RPC_URL}
+
+startBlock: 0
+
+contracts:
+  - name: HypnosExecutor
+    address: ${HYPNOS_EXECUTOR_ADDRESS}
+    abi: ./abis/HypnosExecutor.json
+    startBlock: ${HYPNOS_EXECUTOR_START_BLOCK:-0}
+    handlers:
+      - event: PermissionGranted
+        handler: handlePermissionGranted
+      - event: PermissionRevoked
+        handler: handlePermissionRevoked
+      - event: PermissionUsed
+        handler: handlePermissionUsed
+      - event: ExecutionRecorded
+        handler: handleExecutionRecorded
+
+  - name: HypnosDemo
+    address: ${HYPNOS_DEMO_ADDRESS}
+    abi: ./abis/HypnosDemo.json
+    startBlock: ${HYPNOS_DEMO_START_BLOCK:-0}
+    handlers:
+      - event: CounterIncremented
+        handler: handleCounterIncremented
+      - event: MessageUpdated
+        handler: handleMessageUpdated
+      - event: BalanceDeposited
+        handler: handleBalanceDeposited
+      - event: BalanceWithdrawn
+        handler: handleBalanceWithdrawn
+      - event: StateSnapshot
+        handler: handleStateSnapshot
+
+schema: ./schema.gql

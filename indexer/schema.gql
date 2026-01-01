@@ -1,0 +1,121 @@
+type Permission @entity {
+  id: ID! # permissionId
+  user: String! # executor address
+  target: String! # target contract address
+  selector: String! # function selector
+  maxValue: BigInt! # maximum ETH value
+  maxTokenAmount: BigInt! # maximum token amount
+  tokenAddress: String! # token contract address
+  expiry: BigInt! # expiration timestamp
+  active: Boolean! # whether permission is active
+  grantedAt: BigInt! # block timestamp when granted
+  grantedAtBlock: BigInt! # block number when granted
+  revokedAt: BigInt # block timestamp when revoked (if revoked)
+  revokedAtBlock: BigInt # block number when revoked (if revoked)
+  executions: [Execution!]! @derivedFrom(field: "permission")
+}
+
+type Execution @entity {
+  id: ID! # executionId
+  executor: String! # executor address (Smart Account)
+  target: String! # target contract address
+  selector: String! # function selector
+  value: BigInt! # ETH value sent
+  data: String! # calldata (hex encoded)
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+  permission: Permission! # related permission
+  permissionId: String! # permission ID
+  success: Boolean! # whether execution succeeded
+  reason: String! # reason for success/failure
+}
+
+type PermissionGrantedEvent @entity {
+  id: ID! # event ID
+  user: String! # executor address
+  permissionId: String! # permission ID
+  target: String! # target contract address
+  selector: String! # function selector
+  maxValue: BigInt! # maximum ETH value
+  maxTokenAmount: BigInt! # maximum token amount
+  tokenAddress: String! # token contract address
+  expiry: BigInt! # expiration timestamp
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type PermissionRevokedEvent @entity {
+  id: ID! # event ID
+  user: String! # executor address
+  permissionId: String! # permission ID
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type PermissionUsedEvent @entity {
+  id: ID! # event ID
+  user: String! # executor address
+  permissionId: String! # permission ID
+  executionId: String! # execution ID
+  target: String! # target contract address
+  selector: String! # function selector
+  value: BigInt! # ETH value sent
+  success: Boolean! # whether execution succeeded
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+# HypnosDemo contract events
+type CounterIncrementedEvent @entity {
+  id: ID! # event ID
+  caller: String! # caller address
+  oldValue: BigInt! # previous counter value
+  newValue: BigInt! # new counter value
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type MessageUpdatedEvent @entity {
+  id: ID! # event ID
+  caller: String! # caller address
+  oldMessage: String! # previous message
+  newMessage: String! # new message
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type BalanceDepositedEvent @entity {
+  id: ID! # event ID
+  depositor: String! # depositor address
+  amount: BigInt! # deposit amount
+  newBalance: BigInt! # new balance after deposit
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type BalanceWithdrawnEvent @entity {
+  id: ID! # event ID
+  withdrawer: String! # withdrawer address
+  amount: BigInt! # withdrawal amount
+  newBalance: BigInt! # new balance after withdrawal
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type StateSnapshotEvent @entity {
+  id: ID! # event ID
+  caller: String! # caller address
+  counter: BigInt! # counter value at snapshot
+  message: String! # message at snapshot
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@hypnos/indexer",
+  "version": "1.0.0",
+  "description": "Envio indexer for Hypnos events",
+  "scripts": {
+    "codegen": "envio codegen",
+    "build": "envio build",
+    "deploy": "envio deploy",
+    "dev": "envio dev",
+    "start": "envio start"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}
