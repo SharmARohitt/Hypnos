@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MetaMaskProvider } from "@/hooks/useMetaMask";
-import { WalletConnection } from "@/components/WalletConnection";
-import { PermissionGrant } from "@/components/PermissionGrant";
-import { ExecutionPanel } from "@/components/ExecutionPanel";
+import { useMetaMask } from "@/providers/MetaMaskProvider";
+import { WalletConnection } from "@/components/WalletConnectionNew";
+import { PermissionGrant } from "@/components/PermissionGrantNew";
+import { ExecutionPanel } from "@/components/ExecutionPanelNew";
 import { ExplanationView } from "@/components/ExplanationView";
 import { EventIndexer } from "@/components/EventIndexer";
+import { HypnosPermission } from "@/hooks/usePermissions";
 import { 
   Brain, 
   Shield, 
@@ -18,7 +19,8 @@ import {
   CheckCircle2,
   Github,
   ExternalLink,
-  ChevronDown
+  ChevronDown,
+  Sparkles
 } from "lucide-react";
 
 type Step = "connect" | "permission" | "execute" | "explain";
@@ -33,13 +35,13 @@ const steps = [
 export default function Home() {
   const [currentStep, setCurrentStep] = useState<Step>("connect");
   const [permissionId, setPermissionId] = useState<string | null>(null);
+  const [activePermission, setActivePermission] = useState<HypnosPermission | null>(null);
   const [executionTxHash, setExecutionTxHash] = useState<string | null>(null);
 
   const getStepIndex = (step: Step) => steps.findIndex(s => s.id === step);
   const currentStepIndex = getStepIndex(currentStep);
 
   return (
-    <MetaMaskProvider>
       <main className="min-h-screen text-white">
         {/* Navigation */}
         <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
@@ -50,13 +52,17 @@ export default function Home() {
                   <Brain className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-2xl font-bold text-gradient">Hypnos</span>
+                <span className="px-2 py-0.5 text-xs bg-purple-500/20 text-purple-300 rounded-full flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" />
+                  ERC-7715
+                </span>
               </div>
               <div className="hidden md:flex items-center gap-8">
                 <a href="#features" className="text-gray-400 hover:text-white transition-colors text-sm">Features</a>
                 <a href="#how-it-works" className="text-gray-400 hover:text-white transition-colors text-sm">How It Works</a>
                 <a href="#demo" className="text-gray-400 hover:text-white transition-colors text-sm">Demo</a>
                 <a 
-                  href="https://github.com" 
+                  href="https://github.com/SharmARohitt/Hypnos" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
@@ -79,7 +85,7 @@ export default function Home() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-sm text-gray-300">Built for ERC-7715 Advanced Permissions</span>
+                <span className="text-sm text-gray-300">Built with MetaMask SDK & ERC-7715 Advanced Permissions</span>
               </div>
               
               <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
@@ -340,8 +346,9 @@ export default function Home() {
                         </div>
                       </div>
                       <PermissionGrant
-                        onPermissionGranted={(pid) => {
+                        onPermissionGranted={(pid, permission) => {
                           setPermissionId(pid);
+                          setActivePermission(permission);
                           setCurrentStep("execute");
                         }}
                       />
@@ -367,6 +374,7 @@ export default function Home() {
                       </div>
                       <ExecutionPanel
                         permissionId={permissionId}
+                        permission={activePermission || undefined}
                         onExecutionComplete={(txHash) => {
                           setExecutionTxHash(txHash);
                           setCurrentStep("explain");
@@ -480,10 +488,10 @@ export default function Home() {
                 <span className="font-semibold text-gradient">Hypnos</span>
               </div>
               <p className="text-sm text-gray-500">
-                Built for hackathon demonstration • Cognitive Execution Layer for Ethereum
+                Built for hackathon demonstration • MetaMask SDK + ERC-7715 + Envio Indexer
               </p>
               <div className="flex items-center gap-4">
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                <a href="https://github.com/SharmARohitt/Hypnos" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
                   <Github className="w-5 h-5" />
                 </a>
               </div>
@@ -491,6 +499,5 @@ export default function Home() {
           </div>
         </footer>
       </main>
-    </MetaMaskProvider>
   );
 }

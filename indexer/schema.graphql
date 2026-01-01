@@ -1,0 +1,141 @@
+# Hypnos Indexer GraphQL Schema
+# This schema defines all entities indexed by the Envio indexer
+
+# ===========================================
+# Permission Management Entities
+# ===========================================
+
+type Permission @entity {
+  id: ID! # permissionId (bytes32)
+  user: String! # executor address (lowercase)
+  target: String! # target contract address (lowercase)
+  selector: String! # function selector (bytes4)
+  maxValue: BigInt! # maximum ETH value in wei
+  maxTokenAmount: BigInt! # maximum token amount in wei
+  tokenAddress: String! # token contract address (lowercase)
+  expiry: BigInt! # expiration timestamp (Unix)
+  active: Boolean! # whether permission is active
+  grantedAt: BigInt! # block timestamp when granted
+  grantedAtBlock: BigInt! # block number when granted
+  revokedAt: BigInt # block timestamp when revoked (if revoked)
+  revokedAtBlock: BigInt # block number when revoked (if revoked)
+  
+  # Related executions
+  executions: [Execution!]! @derivedFrom(field: "permission")
+}
+
+type Execution @entity {
+  id: ID! # executionId (bytes32)
+  executor: String! # executor address (Smart Account)
+  target: String! # target contract address
+  selector: String! # function selector
+  value: BigInt! # ETH value sent in wei
+  data: String! # calldata (hex encoded)
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+  
+  # Permission relationship
+  permission: Permission! # related permission entity
+  permissionId: String! # permission ID for queries
+  
+  # Execution result
+  success: Boolean! # whether execution succeeded
+  reason: String! # reason for success/failure
+}
+
+# ===========================================
+# Event Tracking Entities
+# ===========================================
+
+type PermissionGrantedEvent @entity {
+  id: ID! # txHash-logIndex
+  user: String! # executor address (lowercase)
+  permissionId: String! # permission ID (bytes32)
+  target: String! # target contract address
+  selector: String! # function selector
+  maxValue: BigInt! # maximum ETH value
+  maxTokenAmount: BigInt! # maximum token amount
+  tokenAddress: String! # token contract address
+  expiry: BigInt! # expiration timestamp
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type PermissionRevokedEvent @entity {
+  id: ID! # txHash-logIndex
+  user: String! # executor address
+  permissionId: String! # permission ID
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type PermissionUsedEvent @entity {
+  id: ID! # txHash-logIndex
+  user: String! # executor address
+  permissionId: String! # permission ID
+  executionId: String! # execution ID
+  target: String! # target contract address
+  selector: String! # function selector
+  value: BigInt! # ETH value sent
+  success: Boolean! # whether execution succeeded
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+# ===========================================
+# HypnosDemo Contract Events
+# ===========================================
+
+type CounterIncrementedEvent @entity {
+  id: ID! # txHash-logIndex
+  caller: String! # caller address
+  oldValue: BigInt! # previous counter value
+  newValue: BigInt! # new counter value
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type MessageUpdatedEvent @entity {
+  id: ID! # txHash-logIndex
+  caller: String! # caller address
+  oldMessage: String! # previous message
+  newMessage: String! # new message
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type BalanceDepositedEvent @entity {
+  id: ID! # txHash-logIndex
+  depositor: String! # depositor address
+  amount: BigInt! # deposit amount in wei
+  newBalance: BigInt! # new balance after deposit
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type BalanceWithdrawnEvent @entity {
+  id: ID! # txHash-logIndex
+  withdrawer: String! # withdrawer address
+  amount: BigInt! # withdrawal amount in wei
+  newBalance: BigInt! # new balance after withdrawal
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}
+
+type StateSnapshotEvent @entity {
+  id: ID! # txHash-logIndex
+  caller: String! # caller address
+  counter: BigInt! # counter value at snapshot
+  message: String! # message at snapshot
+  timestamp: BigInt! # block timestamp
+  blockNumber: BigInt! # block number
+  transactionHash: String! # transaction hash
+}

@@ -1,0 +1,30 @@
+name: hypnos-indexer
+description: Envio indexer for Hypnos cognitive execution layer
+version: 1.0.0
+
+networks:
+  - id: 11155111 # Sepolia
+    start_block: 0
+    contracts:
+      - name: HypnosExecutor
+        address:
+          - ${HYPNOS_EXECUTOR_ADDRESS}
+        handler: src/EventHandlers.ts
+        events:
+          - event: PermissionGranted(address indexed user, bytes32 indexed permissionId, address target, bytes4 selector, uint256 maxValue, uint256 maxTokenAmount, address tokenAddress, uint256 expiry)
+          - event: PermissionRevoked(address indexed user, bytes32 indexed permissionId)
+          - event: PermissionUsed(address indexed user, bytes32 indexed permissionId, bytes32 indexed executionId, address target, bytes4 selector, uint256 value, bool success)
+          - event: ExecutionRecorded(bytes32 indexed executionId, address indexed executor, address indexed target, bytes4 selector, uint256 value, bytes32 permissionId, bool success, string reason)
+          
+      - name: HypnosDemo
+        address:
+          - ${HYPNOS_DEMO_ADDRESS}
+        handler: src/EventHandlers.ts
+        events:
+          - event: CounterIncremented(address indexed caller, uint256 oldValue, uint256 newValue)
+          - event: MessageUpdated(address indexed caller, string oldMessage, string newMessage)
+          - event: BalanceDeposited(address indexed depositor, uint256 amount, uint256 newBalance)
+          - event: BalanceWithdrawn(address indexed withdrawer, uint256 amount, uint256 newBalance)
+          - event: StateSnapshot(address indexed caller, uint256 counter, string message)
+
+rollback_on_reorg: true

@@ -36,6 +36,8 @@ typechain-types/
 
 # Envio
 indexer/.envio/
+indexer/generated/
+indexer/.ponder/
 
 # Next.js
 .next/
@@ -43,3 +45,8 @@ out/
 
 # TypeScript
 *.tsbuildinfo
+
+# Lock files (optional - uncomment to track)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
